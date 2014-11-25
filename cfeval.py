@@ -1,4 +1,5 @@
 # various evaluation measures for collaboration filtering
+import numpy
 from numpy import *
 from scipy.sparse import *
 
@@ -21,7 +22,7 @@ Both X and Y should be scipy.sparse.csc_matrix
 def rmse(X, Y):
 	assert(X.size == Y.size and all(X.indices == Y.indices) and all(X.indptr == Y.indptr))
 	if X.size > 0:
-		return sqrt(sum((X.data - Y.data) ** 2) / X.size)
+		return numpy.sqrt(sum((X.data - Y.data) ** 2) / X.size)
 	else:
 		return 0
 
@@ -64,7 +65,7 @@ def map(X, Y):
 		I = argsort(-Xi) 
 		[inds1] = where(Yi[I] >= 1)
 		nvalid += 1
-		pres = divide(arange(1, inds1.size + 1), 1.0 + inds1) # to avoid integer arithmetic
+		pres = numpy.divide(arange(1, inds1.size + 1), 1.0 + inds1) # to avoid integer arithmetic
 		res += mean(pres)
 	if nvalid > 0:
 		res = res / nvalid
@@ -99,7 +100,7 @@ def map_rating(X,Y,r0):
 		I = argsort(-Xi) 
 		[inds1] = where(Yi[I] >= r0)
 		nvalid += 1
-		pres = divide(arange(1, inds1.size + 1), 1.0 + inds1) # to avoid integer arithmetic
+		pres = numpy.divide(arange(1, inds1.size + 1), 1.0 + inds1) # to avoid integer arithmetic
 		res += mean(pres)
 	if nvalid > 0:
 		res = res / nvalid
@@ -189,7 +190,7 @@ def mpr(X, Y):
 		I = argsort(-Xi) 
 		[inds1] = where(Yi[I] >= 1)
 		nvalid += inds1.size
-		pres = divide(arange(1, inds1.size + 1), 1.0 + inds1) # to avoid integer arithmetic
+		pres = numpy.divide(arange(1, inds1.size + 1), 1.0 + inds1) # to avoid integer arithmetic
 		res += sum(pres)	
 	assert(nvalid > 0)
 	res = res / nvalid
@@ -218,7 +219,7 @@ def mrpr(X, Y):
 		[inds1] = where(Yi[I] >= 1)
 		n0 = j1-j0-inds1.size # total number of irrelevant items
 		nvalid += inds1.size
-		rpr = 1-divide(inds1-arange(inds1.size), float(n0)) # to avoid integer arithmetic
+		rpr = 1-numpy.divide(inds1-arange(inds1.size), float(n0)) # to avoid integer arithmetic
 		res += sum(rpr)	
 	assert(nvalid > 0)
 	
@@ -262,7 +263,7 @@ def ap_global(X,Y):
 		assert False, "no relevant items found in the test data"
 	I = argsort(-Xdata) 
 	[inds1] = where(Ydata[I] >= 1)
-	pres = divide(arange(1, inds1.size + 1), 1.0 + inds1) # to avoid integer arithmetic
+	pres = numpy.divide(arange(1, inds1.size + 1), 1.0 + inds1) # to avoid integer arithmetic
 	return mean(pres)
 	
 
@@ -273,11 +274,11 @@ def ndcgk_global(X,Y,K):
 	Ydata = Y.data
 	nnz = Ydata.size
 	I = argsort(-Xdata)
-	Y_pred = exp(Ydata[I])-1.0
-	Y_best = exp(-(sort(-Ydata)))-1.0
-	Wi = log(exp(1) + Ydata.size-1)
-	Yi_pred = divide(Y_pred, Wi)
-	Yi_best = divide(Y_best, Wi)
+	Y_pred = numpy.exp(Ydata[I])-1.0
+	Y_best = numpy.exp(-(sort(-Ydata)))-1.0
+	Wi = numpy.log(numpy.exp(1) + Ydata.size-1)
+	Yi_pred = numpy.divide(Y_pred, Wi)
+	Yi_best = numpy.divide(Y_best, Wi)
 	K = min([K, nnz])
 	res = sum(Yi_pred[0:K]) / sum(Yi_best[0:K])
 	return res
@@ -305,11 +306,11 @@ def ndcg_k(X, Y, K):
 			continue
 		nvalid += 1
 		I = argsort(-Xi)
-		Yi_pred = exp(Yi[I])-1.0
-		Yi_best = exp(-(sort(-Yi)))-1.0
-		Wi = log(exp(1) + arange(j1 - j0))
-		Yi_pred = divide(Yi_pred, Wi)
-		Yi_best = divide(Yi_best, Wi)
+		Yi_pred = numpy.exp(Yi[I])-1.0
+		Yi_best = numpy.exp(-(sort(-Yi)))-1.0
+		Wi = numpy.log(numpy.exp(1) + arange(j1 - j0))
+		Yi_pred = numpy.divide(Yi_pred, Wi)
+		Yi_best = numpy.divide(Yi_best, Wi)
 		Ki = min([K, j1 - j0])
 		res += sum(Yi_pred[0:Ki]) / sum(Yi_best[0:Ki])
 	assert(nvalid > 0)
@@ -335,11 +336,11 @@ def ndcg_multi(X, Y, Ks):
 		Xi = Xdata[j0:j1]
 		Yi = Ydata[j0:j1]
 		I = argsort(-Xi)
-		Yi_pred = exp(Yi[I])-1.0
-		Yi_best = exp(-(sort(-Yi)))-1.0
-		Wi = log(exp(1) + arange(j1 - j0))
-		Yi_pred = divide(Yi_pred, Wi)
-		Yi_best = divide(Yi_best, Wi)
+		Yi_pred = numpy.exp(Yi[I])-1.0
+		Yi_best = numpy.exp(-(sort(-Yi)))-1.0
+		Wi = numpy.log(numpy.exp(1) + arange(j1 - j0))
+		Yi_pred = numpy.divide(Yi_pred, Wi)
+		Yi_best = numpy.divide(Yi_best, Wi)
 		for k in xrange(len(Ks)):
 			K = Ks[k]
 			Ki = min([K, j1 - j0])
