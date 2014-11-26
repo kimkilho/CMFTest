@@ -1,7 +1,7 @@
 import numpy
 from numpy import *
-import scipy
-from scipy.sparse import *
+# import scipy
+# from scipy.sparse import *
 
 def loadMeta(filename):
 	fData = open(filename, 'r')
@@ -74,7 +74,6 @@ def loadData(metafile, datafile):
 
 	return [user_item, item_context, user_context]
 
-
 def isDouble(str):
 	try:
 		float(str)
@@ -82,6 +81,7 @@ def isDouble(str):
 	except ValueError:
 		return False
 
+"""
 if __name__ == "__main__":
 	[user_item, item_context, user_context] = loadData('meta.txt', 'em_66_f2_m11_tr.libsvm')
 	for i in xrange(0, 67):
@@ -89,3 +89,4 @@ if __name__ == "__main__":
 	print item_context
 	for j in xrange(0, 10057-10009):
 		print "user_context[%d] = "%j, user_context[j]
+"""

@@ -12,6 +12,7 @@ Sep. 2011
 import numpy
 import time
 import anewton
+from data import loadData
 import scipy.sparse
 
 def learn(Xs, Xstst, rc_schema, r0s, r1s, alphas, modes, K, C, T=40, tol=0.005):
@@ -200,11 +201,11 @@ def test_cmf():
     import scipy.io
     import cfeval
 
-    # data()
+    # matdata1 = scipy.io.loadmat('data1.mat')
+    # matdata2 = scipy.io.loadmat('data1.mat')
 
-    matdata1 = scipy.io.loadmat('data1.mat')
-    matdata2 = scipy.io.loadmat('data1.mat')
-    
+
+    """
     Xtrn = matdata1['Xtrn']
     print Xtrn.shape
     Xtrn = scipy.sparse.csc_matrix(Xtrn)
@@ -212,17 +213,21 @@ def test_cmf():
     # Xaux = Xaux.T.tocsc()
     Xaux = scipy.sparse.csc_matrix(Xaux.T)
     print Xaux.shape
-    """
     Xtst = matdata1['Xtst']
     print Xtst.shape
     Xtst = scipy.sparse.csc_matrix(Xtst)
     """
 
-    Xs_trn = [Xtrn, Xaux]
-    # Xs_trn = [Xtrn]
+    Xs_trn = loadData('meta.txt', 'em_66_f2_m11_tr.libsvm')
+    for mat in Xs_trn:
+        print mat.shape
+
+    Xs_tst = loadData('meta.txt', 'em_66_f2_m11_tr.libsvm')
+    for mat in Xs_tst:
+        print mat.shape
+    # Xs_trn = [Xtrn, Xaux]
     # Xs_tst = [Xtst, None]
-    Xs_tst = [Xtrn, None]
-    
+
     rc_schema = numpy.array([[0, 2], [1, 0]])
     C = 0.9
     K = 30
