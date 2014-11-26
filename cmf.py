@@ -20,20 +20,21 @@ def learn(Xs, Xstst, rc_schema, r0s, r1s, alphas, modes, K, C, T=40, tol=0.005):
     assert(r0s != None and r1s != None)
     assert(alphas != None)
     res = 0
-    Xts = numpy.empty(len(Xs),object)
+    Xts = numpy.empty(len(Xs), object)
     
     
     for i in xrange(len(Xs)):
-        Xts[i] = Xs[i].T.tocsc()
+        # Xts[i] = Xs[i].T.tocsc()
+        Xts[i] = scipy.sparse.csc_matrix(Xs[i].T)
         if modes[i] == 'sparselogmf' or modes[i] == 'denselogmf':
-            assert r0s[i]!=r1s[i]
+            assert r0s[i] != r1s[i]
         
-    # S: numober of types, Ns: sizes of each type 
+    # S: number of types, Ns: sizes of each type
     [S, Ns] = rel_config(Xs, rc_schema)
-    print S,Ns
+    print S, Ns
 
     # random initialize factor matrices
-    Us = numpy.empty(S,object)
+    Us = numpy.empty(S, object)
     print Us.shape
     for i in xrange(S):
         Us[i] = numpy.random.rand(Ns[i], K)/K
@@ -70,7 +71,8 @@ def loss(Us, Xs, rc_schema, r0s, r1s, modes, alphas, C=0):
     for t in xrange(len(Xs)):
         alpha_t = alphas[t]
         X = Xs[t]
-        if X==None or X.size == 0 or alpha_t == 0:
+        # X = scipy.sparse.csc_matrix(X)  # FIXME: added
+        if X == None or X.size == 0 or alpha_t == 0:
             continue
         data = X.data
         indices = X.indices
@@ -197,20 +199,29 @@ def predict(Us, Xs, rc_schema, r0s, r1s, modes):
 def test_cmf():
     import scipy.io
     import cfeval
-  
+
+    # data()
+
     matdata1 = scipy.io.loadmat('data1.mat')
-    matdata2 = scipy.io.loadmat('data2.mat')
+    matdata2 = scipy.io.loadmat('data1.mat')
     
     Xtrn = matdata1['Xtrn']
     print Xtrn.shape
-    Xaux = matdata2['Xtrn'] + matdata2['Xtst'] 
-    Xaux = Xaux.T.tocsc()
+    Xtrn = scipy.sparse.csc_matrix(Xtrn)
+    Xaux = matdata2['Xtrn'] + matdata2['Xtst']
+    # Xaux = Xaux.T.tocsc()
+    Xaux = scipy.sparse.csc_matrix(Xaux.T)
     print Xaux.shape
+    """
     Xtst = matdata1['Xtst']
     print Xtst.shape
-   
+    Xtst = scipy.sparse.csc_matrix(Xtst)
+    """
+
     Xs_trn = [Xtrn, Xaux]
-    Xs_tst = [Xtst, None]
+    # Xs_trn = [Xtrn]
+    # Xs_tst = [Xtst, None]
+    Xs_tst = [Xtrn, None]
     
     rc_schema = numpy.array([[0, 2], [1, 0]])
     C = 0.9
@@ -230,7 +241,7 @@ def test_cmf():
     print Us[2].shape
     print '********'
     Vt = scipy.sparse.csc_matrix(Us[0],dtype=float)
-    Ut= scipy.sparse.csc_matrix(Us[1],dtype=float)
+    Ut = scipy.sparse.csc_matrix(Us[1],dtype=float)
     
     Ys_tst = predict(Us, Xs_tst, rc_schema, r0s, r1s, modes)
     #tst
