@@ -233,16 +233,16 @@ def test_cmf():
 
     # rc_schema = numpy.array([[0, 2], [1, 0]])
     rc_schema = numpy.array([[0, 1, 0], [1, 2, 2]]) # rc_schema should be the same order of data matrices
-    C = 0.9
-    K = 30  # number of latent factors
-    alphas = [0.8, 0.1, 0.1]
-    T = 20  # number of iterations
+    C = 0.1
+    K = 50  # number of latent factors
+    alphas = [0.4, 0.4, 0.2]
+    T = 100  # number of iterations
     modes = numpy.zeros(len(Xs_trn), object)
     modes[0] = 'densemf'
-    modes[1] = 'densemf'
-    modes[2] = 'densemf'
-    r0s = [1.0, 0.0, 1.0]
-    r1s = [5.0, 1.0, 2.0]
+    modes[1] = 'sparsemf'
+    modes[2] = 'sparsemf'
+    r0s = [0.1, 0.1, 0.1]
+    r1s = [0.05, 0.05, 0.05]
 
     [Us, r0s, r1s] = learn(Xs_trn, Xs_tst, rc_schema, r0s, r1s, alphas, modes, K, C, T)
     print '******'
