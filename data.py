@@ -27,7 +27,7 @@ def loadData(metafile, datafile):
 	fData = open(datafile, 'r')
 	[numAttrPerGroup, numAttributes] = loadMeta(metafile)
 
-	target = numpy.array([])
+	# target = numpy.array([])
 	numUsers = numAttrPerGroup[0]
 	print "numUsers=", numUsers
 	numItems = numAttrPerGroup[1]
@@ -46,11 +46,12 @@ def loadData(metafile, datafile):
 		lineList = line.split()
 		currUserId = 0
 		currItemId = 0
-		currContextIds = numpy.array([])
+		# currContextIds = numpy.array([])
+		currContextIds = []
 		for curr in lineList:
 			if isDouble(curr):
 				currTarget = float(curr)
-				target = numpy.append(target, currTarget)
+				# target = numpy.append(target, currTarget)
 			else:
 				pair = curr.split(':')
 				currFeatureId = int(pair[0])
@@ -65,7 +66,8 @@ def loadData(metafile, datafile):
 
 				if currFeatureId > numUsers+numItems:
 					# currFeatureId is from "context"
-					currContextIds = numpy.append(currContextIds, currFeatureId-numUsers-numItems)
+					# currContextIds = numpy.append(currContextIds, currFeatureId-numUsers-numItems)
+					currContextIds.append(currFeatureId-numUsers-numItems)
 		print currUserId, currItemId, currContextIds
 		user_item[currUserId-1, currItemId-1] += 1
 		for id in currContextIds:

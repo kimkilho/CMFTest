@@ -15,7 +15,7 @@ import anewton
 from data import loadData
 import scipy.sparse
 
-def learn(Xs, Xstst, rc_schema, r0s, r1s, alphas, modes, K, C, T=40, tol=0.005):
+def learn(Xs, Xstst, rc_schema, r0s, r1s, alphas, modes, K, C, T=40, tol=0.0001):
     assert(rc_schema.shape[1] == len(Xs) and rc_schema.shape[0] == 2) # schema match data
     assert(numpy.all(rc_schema[0, :] != rc_schema[1, :])) # should not have symmetric relations
     assert(r0s != None and r1s != None)
@@ -221,11 +221,13 @@ def test_cmf():
     Xtst = scipy.sparse.csc_matrix(Xtst)
     """
 
-    Xs_trn = loadData('meta.txt', 'em_66_f2_m11_tr.libsvm')
+    Xs_trn = loadData('./data/meta.txt', './em_66_f2_m11_tr.libsvm')
+    #Xs_trn = loadData('./data/meta.txt', './data/em_10000_f5_t4_k1_tr.libsvm')
     for mat in Xs_trn:
         print mat.shape
 
-    Xs_tst = loadData('meta.txt', 'em_66_f2_m11_te.libsvm')
+    Xs_tst = loadData('./data/meta.txt', './em_66_f2_m11_te.libsvm')
+    #Xs_tst = loadData('./data/meta.txt', './data/em_10000_f5_t4_k1_te.libsvm')
     for mat in Xs_tst:
         print mat.shape
     # Xs_trn = [Xtrn, Xaux]
@@ -258,6 +260,7 @@ def test_cmf():
     X = Xs_tst[0]
     Y = Ys_tst[0]
     print Y.shape
+    print Y
    
     
     print "K: %d, C: %f" % (K, C)
