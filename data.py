@@ -1,6 +1,6 @@
 import numpy
 from numpy import *
-# import scipy
+import scipy
 # from scipy.sparse import *
 
 def loadMeta(filename):
@@ -72,6 +72,9 @@ def loadData(metafile, datafile):
 			item_context[currItemId-1, id-1] += 1
 			user_context[currUserId-1, id-1] += 1
 
+	user_item = scipy.sparse.csc_matrix(user_item,dtype=float)
+	item_context = scipy.sparse.csc_matrix(item_context,dtype=float)
+	user_context = scipy.sparse.csc_matrix(user_context,dtype=float)
 	return [user_item, item_context, user_context]
 
 def isDouble(str):

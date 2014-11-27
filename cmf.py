@@ -144,13 +144,16 @@ def loss(Us, Xs, rc_schema, r0s, r1s, modes, alphas, C=0):
 def rel_config(Xs, rc_schema):
     
     S = rc_schema.max() + 1
+    print "S=", S
     Ns = -1 * numpy.ones(S, int)
     for i in xrange(len(Xs)):
+        print Ns
         
         ri = rc_schema[0, i]
         ci = rc_schema[1, i]
         
         [m, n] = Xs[i].shape
+        print Xs[i].shape
         
         if Ns[ri] < 0:
             Ns[ri] = m
@@ -222,22 +225,24 @@ def test_cmf():
     for mat in Xs_trn:
         print mat.shape
 
-    Xs_tst = loadData('meta.txt', 'em_66_f2_m11_tr.libsvm')
+    Xs_tst = loadData('meta.txt', 'em_66_f2_m11_te.libsvm')
     for mat in Xs_tst:
         print mat.shape
     # Xs_trn = [Xtrn, Xaux]
     # Xs_tst = [Xtst, None]
 
-    rc_schema = numpy.array([[0, 2], [1, 0]])
+    # rc_schema = numpy.array([[0, 2], [1, 0]])
+    rc_schema = numpy.array([[0, 1, 0], [1, 2, 2]]) # rc_schema should be the same order of data matrices
     C = 0.9
-    K = 30
-    alphas = [0.9, 0.1]
-    T = 20
+    K = 30  # number of latent factors
+    alphas = [0.8, 0.1, 0.1]
+    T = 20  # number of iterations
     modes = numpy.zeros(len(Xs_trn), object)
-    modes[0] = 'sparsemf'
+    modes[0] = 'densemf'
     modes[1] = 'densemf'
-    r0s = [1.0, 0.0]
-    r1s = [5.0, 1.0]
+    modes[2] = 'densemf'
+    r0s = [1.0, 0.0, 1.0]
+    r1s = [5.0, 1.0, 2.0]
 
     [Us, r0s, r1s] = learn(Xs_trn, Xs_tst, rc_schema, r0s, r1s, alphas, modes, K, C, T)
     print '******'
@@ -245,8 +250,8 @@ def test_cmf():
     print Us[1].shape
     print Us[2].shape
     print '********'
-    Vt = scipy.sparse.csc_matrix(Us[0],dtype=float)
-    Ut = scipy.sparse.csc_matrix(Us[1],dtype=float)
+    # Vt = scipy.sparse.csc_matrix(Us[0],dtype=float)
+    # Ut = scipy.sparse.csc_matrix(Us[1],dtype=float)
     
     Ys_tst = predict(Us, Xs_tst, rc_schema, r0s, r1s, modes)
     #tst
@@ -255,8 +260,8 @@ def test_cmf():
     print Y.shape
    
     
-    print "K: %d, C: %f"%(K, C)
-    print "alphas: ",alphas
+    print "K: %d, C: %f" % (K, C)
+    print "alphas: ", alphas
     print "rmse: %.4f , mae: %.4f\n" % (cfeval.rmse(X, Y), cfeval.mae(X, Y))
 if __name__ == "__main__":
     test_cmf()
